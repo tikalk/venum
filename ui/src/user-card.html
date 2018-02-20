@@ -20,9 +20,7 @@
         <div class="q-options">
         </div>
         <div class="form-group">
-            <div class="radios" class="btn-group" data-toggle="buttons">
-                
-                </div>
+            <div class="container"></div>
         </div>
       </template>
         <script>
@@ -47,7 +45,7 @@
 
                     const qs = JSON.parse('[{\"name\":\"color\",\"question\":\"what is your favorite color?\",\"answers\":[{\"a\":\"blue\",\"e\":\"red\",\"c\":\"yellow\"}]},{\"name\":\"car\",\"question\":\"what is your favorite car?\",\"answers\":[{\"a\":\"picassa\",\"e\":\"porsh\",\"c\":\"buick\"}]}]');
                     shadowRoot.querySelector('.q-set-title').innerHTML = "Questionnaire #"+qSetId;
-                    const questions = qs.forEach(q => {
+                    const questions = qs.forEach((q,id) => {
                         const mc = document.createElement("multiple-choice");
                         const options = jQuery.map(q.answers[0], function(value, index) {
                             return [value];
@@ -55,11 +53,13 @@
                         
                         const answers = options.map(
                             (ans, idx) => `<label class="btn btn-default">
-                        <input type="radio" name="options" id="option${idx}" value="${idx}"   /> ${ans}
+                        <input type="radio" name="options${id}" id="option${idx}" value="${idx}"   /> ${ans}
                     </label>`
                         )
+                        const contained = `<div class="radios" class="btn-group" data-toggle="buttons">${answers}</div>`;
+
                         mc.setAttribute("text", q.question);
-                        mc.setAttribute("options", answers);
+                        mc.setAttribute("options", contained);
                         shadowRoot.appendChild(mc);
                         });
                     
@@ -116,7 +116,7 @@
                     const options = this.getAttribute('options');
 
                     this.querySelector('.q-text').innerHTML = text;
-                    this.querySelector('.radios').innerHTML = options;
+                    this.querySelector('.container').innerHTML = options.replace(/,/g, '<br>');
                     
                 }
                 
