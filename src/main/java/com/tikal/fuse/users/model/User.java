@@ -8,6 +8,18 @@ public class User {
 	
 	private int age;
 	
+	
+	public User() {
+		
+	}
+	
+	public User(String name, String password, int age) {
+		super();
+		this.name = name;
+		this.password = password;
+		this.age = age;
+	}
+
 	public String getName() {
 		return name;
 	}
