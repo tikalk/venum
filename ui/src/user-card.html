@@ -34,8 +34,28 @@
                     // <user-card q-set-id="1"></user-card>
                     const qSetId = this.getAttribute('q-set-id');
 
+                    const qs = JSON.parse('[{\"name\":\"color\",\"question\":\"what is your favorite color?\",\"answers\":[{\"a\":\"blue\",\"e\":\"red\",\"c\":\"yellow\"}]},{\"name\":\"car\",\"question\":\"what is your favorite car?\",\"answers\":[{\"a\":\"picassa\",\"e\":\"porsh\",\"c\":\"buick\"}]}]');
+                    shadowRoot.querySelector('.q-set-title').innerHTML = "Questionnaire #"+qSetId;
+                    const questions = qs.forEach(q => {
+                        const mc = document.createElement("multiple-choice");
+                        mc.setAttribute("text", q.question);
+                        mc.setAttribute("options", JSON.stringify(q.answers[0]));
+                        shadowRoot.appendChild(mc);
+                        });
+                    
                     // Fetch the data for that user Id from the API and call the render method with this data
-                    fetch(`${qSetUrl}${qSetId}`)
+                    fetch(`${qSetUrl}${qSetId}`,{
+                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                        credentials: 'same-origin', // include, *omit
+                        headers: {
+                        'user-agent': 'Mozilla/4.0 MDN Example',
+                        'content-type': 'application/json'
+                        },
+                        method: 'GET', // *GET, PUT, DELETE, etc.
+                        mode: 'cors', // no-cors, *same-origin
+                        referrer: 'no-referrer', // *client
+                        origin: '*'
+                    })
                         .then((response) =>{
                             response.text();
                         })
@@ -46,11 +66,6 @@
                             this.render(JSON.parse('[{\"name\":\"color\",\"question\":\"what is your favorite color?\",\"answers\":[{\"a\":\"blue\",\"e\":\"red\",\"c\":\"yellow\"}]},{\"name\":\"car\",\"question\":\"what is your favorite car?\",\"answers\":[{\"a\":\"picassa\",\"e\":\"porsh\",\"c\":\"buick\"}]}]'));
                             console.error(error);
                         });
-                }
-                render(q) {
-                    const qSetId = this.getAttribute('q-set-id');
-                    this.shadowRoot.querySelector('.q-set-title').innerHTML = "Questionnaire #"+qSetId;
-                    const questions = q.map(q =>`<multiple-choice text="${q.question}  options="${q.answers}"></multiple-choice>`);
                 }
             }
             class Question extends HTMLElement {
