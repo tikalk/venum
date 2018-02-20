@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>bootstrap radio button example</title>
+  
+  
+  <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <template id="template">
+    <style>
+      
+    </style>
+   
+    <div id="radios" class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default checked">
+            <input type="radio" name="options" id="option1" value="1"   /> Yes
+        </label>
+        <label class="btn btn-default">
+            <input type="radio" name="options" id="option2" value="0" checked /> No
+        </label>
+        <label class="btn btn-default">
+            <input type="radio" name="options" id="option3" value="42" /> Whatever
+        </label>
+    </div>
+  </template>
+</head>
+
+<body>
+  
+<script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+<script>
+_ = _.noConflict();
+</script>
+
+<form>
+    <div class="form-group" id="questions">
+      
+ </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+  
+  
+
+    <script  src="js/index.js"></script>
+
+
+    <script>
+        var template = document.querySelector('#template');
+        var clone = document.importNode(template.content, true);
+        var host = document.querySelector('#questions');
+        host.appendChild(clone);
+      </script>
+
+</body>
+
+</html>
