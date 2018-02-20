@@ -1,0 +1,49 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "2018-02-20T14:32:36Z",
+      "title": "getQuestionnaire"
+    },
+    "host": "0t64rogz6c.execute-api.us-east-2.amazonaws.com",
+    "basePath": "/dev",
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+      "/chaim": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "200 response",
+              "schema": {
+                "$ref": "#/definitions/Empty"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-any-method": {
+          "parameters": [
+            {
+              "name": "questionnair",
+              "in": "query",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "200 response"
+            }
+          }
+        }
+      },
+    "definitions": {
+      "Empty": {
+        "type": "object",
+        "title": "Empty Schema"
+      }
+    }
+}
