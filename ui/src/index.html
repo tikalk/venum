@@ -1,111 +1,160 @@
-<!DOCTYPE html>
-<html lang="en" >
-
-<head>
-  <meta charset="UTF-8">
-  <title>bootstrap radio button example</title>
-  
-  
-  <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
-  <template id="template">
-    <style>
-      
-    </style>
-   
-    <div id="radios" class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default checked">
-            <input type="radio" name="options" id="option1" value="1"   /> Yes
-        </label>
-        <label class="btn btn-default">
-            <input type="radio" name="options" id="option2" value="0" checked /> No
-        </label>
-        <label class="btn btn-default">
-            <input type="radio" name="options" id="option3" value="42" /> Whatever
-        </label>
-    </div>
-  </template>
-  <template>
-    <p>Hello <strong></strong> :)</p>
-</template>
-
-</head>
-
-<body>
-  
-<script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
-
- <!-- Runs custom element -->
- <hello-world who="Unicorn"></hello-world>
-
-<form>
-    <div class="form-group" id="questions">
-      
- </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
-  
-  
-
-    <script  src="js/index.js"></script>
-
-
-    <script>
-        var template = document.querySelector('#template');
-        var clone = document.importNode(template.content, true);
-        var host = document.querySelector('#questions');
-        host.appendChild(clone);
-      </script>
-
-<script>
-    (function(window, document, undefined) {
-        // Refers to the "importer", which is index.html
-        var thatDoc = document;
-        // Refers to the "importee", which is src/hello-world.html
-        var thisDoc =  (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
-        // Gets content from <template>
-        var template = thisDoc.querySelector('template').content;
-        // Creates an object based in the HTML Element prototype
-        var MyElementProto = Object.create(HTMLElement.prototype);
-        // Creates the "who" attribute and sets a default value
-        MyElementProto.who = 'World';
-        // Fires when an instance of the element is created
-        MyElementProto.createdCallback = function() {
-            // Creates the shadow root
-            var shadowRoot = this.createShadowRoot();
-            // Adds a template clone into shadow root
-            var clone = thatDoc.importNode(template, true);
-            shadowRoot.appendChild(clone);
-            // Caches <strong> DOM query
-            this.strong = shadowRoot.querySelector('strong');
-            // Checks if the "who" attribute has been overwritten
-            if (this.hasAttribute('who')) {
-                var who = this.getAttribute('who');
-                this.setWho(who);
-            }
-            else {
-                this.setWho(this.who);
-            }
-        };
-        // Fires when an attribute was added, removed, or updated
-        MyElementProto.attributeChangedCallback = function(attr, oldVal, newVal) {
-            if (attr === 'who') {
-                this.setWho(newVal);
-            }
-        };
-        // Sets new value to "who" attribute
-        MyElementProto.setWho = function(val) {
-            this.who = val;
-            // Sets "who" value into <strong>
-            this.strong.textContent = this.who;
-        };
-        // Registers <hello-world> in the main document
-        window.MyElement = thatDoc.registerElement('hello-world', {
-            prototype: MyElementProto
-        });
-    })(window, document);
-    </script>
-</body>
-
-</html>
+<html>
+        
+        <head>
+          <title>Questionairre</title>
+    
+        <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+    
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        
+          <template id="q-set-card-template">
+            <h1 class="q-set-title">
+            </h1>
+            <div id="questions">        
+            </div>
+          </template>
+          <template id="question">
+            <h3 class="q-text" style="text-transform: capitalize">
+            </h3>
+            <div class="q-options">
+            </div>
+            <div class="form-group">
+                <div class="container"></div>
+            </div>
+          </template>
+            <script>
+                const qSetUrl = 'https://0t64rogz6c.execute-api.us-east-2.amazonaws.com/dev/chaim?questionnair=';
+                const currentDocument = document.currentScript.ownerDocument;
+    
+                class QSet extends HTMLElement {
+                    // Called when element is inserted in DOM
+                    connectedCallback() {
+                        const shadowRoot = this.attachShadow({mode: 'open'});
+    
+                        // Select the template and clone it. Finally attach the cloned node to the shadowDOM's root.
+                        // Current document needs to be defined to get DOM access to imported HTML
+                        const template = currentDocument.querySelector('#q-set-card-template');
+                        const instance = template.content.cloneNode(true);
+                        shadowRoot.appendChild(instance);
+    
+                        // Extract the attribute q-set-id from our element. 
+                        // Note that we are going to specify our cards like: 
+                        // <user-card q-set-id="1"></user-card>
+                        const qSetId = this.getAttribute('q-set-id');
+    
+                        const qs = JSON.parse('[{\"name\":\"color\",\"question\":\"what is your favorite color?\",\"answers\":[{\"a\":\"blue\",\"e\":\"red\",\"c\":\"yellow\"}]},{\"name\":\"car\",\"question\":\"what is your favorite car?\",\"answers\":[{\"a\":\"picassa\",\"e\":\"porsh\",\"c\":\"buick\"}]}]');
+                        shadowRoot.querySelector('.q-set-title').innerHTML = "Questionnaire #"+qSetId;
+                        const questions = qs.forEach((q,id) => {
+                            const mc = document.createElement("multiple-choice");
+                            const options = jQuery.map(q.answers[0], function(value, index) {
+                                return [value];
+                            });
+                            
+                            const answers = options.map(
+                                (ans, idx) => `<label class="btn btn-default">
+                            <input type="radio" style="margin-bottom:7px" name="options${id}" id="option${idx}" value="${idx}"   /> 
+                            <div style="text-transform: capitalize; display:inline;">
+                            ${ans}
+                            </div>
+                        </label>`
+                            )
+                            const contained = `<div class="radios" class="btn-group" data-toggle="buttons">${answers}</div>`;
+    
+                            mc.setAttribute("text", q.question);
+                            mc.setAttribute("options", contained);
+                            shadowRoot.appendChild(mc);
+                            });
+                        
+                        // Fetch the data for that user Id from the API and call the render method with this data
+                        fetch(`${qSetUrl}${qSetId}`,{
+                            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                            credentials: 'same-origin', // include, *omit
+                            headers: {
+                            'user-agent': 'Mozilla/4.0 MDN Example',
+                            'content-type': 'application/json'
+                            },
+                            method: 'GET', // *GET, PUT, DELETE, etc.
+                            mode: 'same-origin', // no-cors, *same-origin
+                            referrer: '*', // *client
+                            origin: '*'
+                        })
+                            .then((response) =>{
+                                response.text();
+                            })
+                            .then((responseText) => {
+                                this.render(JSON.parse(responseText));
+                            })
+                            .catch((error) => {
+                                // this.render(JSON.parse('[{\"name\":\"color\",\"question\":\"what is your favorite color?\",\"answers\":[{\"a\":\"blue\",\"e\":\"red\",\"c\":\"yellow\"}]},{\"name\":\"car\",\"question\":\"what is your favorite car?\",\"answers\":[{\"a\":\"picassa\",\"e\":\"porsh\",\"c\":\"buick\"}]}]'));
+                                console.error(error);
+                            });
+                    }
+                }
+                class Question extends HTMLElement {
+                    constructor() {
+                        // If you define a constructor, always call super() first as it is required by the CE spec.
+                        super();
+    
+                        // Setup a click listener on <user-card>
+                        this.addEventListener('click', e => {
+                        this.toggleCard();
+                        });
+                    }
+                    // Called when element is inserted in DOM
+                    connectedCallback() {
+                        //const shadowRoot = this.attachShadow({mode: 'open'});
+    
+                        // Select the template and clone it. Finally attach the cloned node to the shadowDOM's root.
+                        // Current document needs to be defined to get DOM access to imported HTML
+                        const template = currentDocument.querySelector('#question');
+                        const instance = template.content.cloneNode(true);
+                        // shadowRoot.appendChild(instance);
+                        this.appendChild(instance);
+                        
+                        // Extract the attribute q-set-id from our element. 
+                        // Note that we are going to specify our cards like: 
+                        // <user-card q-set-id="1"></user-card>
+                        const text = this.getAttribute('text');
+                        const options = this.getAttribute('options');
+    
+                        this.querySelector('.q-text').innerHTML = text;
+                        this.querySelector('.container').innerHTML = options.replace(/,/g, '<br>');
+                        
+                    }
+                    
+                    toggleCard() {
+                        let elem = this.shadowRoot.querySelector('.card__hidden-content');
+                        let btn = this.shadowRoot.querySelector('.card__details-btn');
+                        btn.innerHTML = elem.style.display == 'none' ? 'Less Details' : 'More Details';
+                        elem.style.display = elem.style.display == 'none' ? 'block' : 'none';
+                    }
+                }
+    
+                customElements.define('q-set', QSet);
+                customElements.define('multiple-choice', Question);
+    
+            </script>
+            <style>
+                body{
+                    margin: 50px;
+                    margin: 50px;
+        padding: 20px;
+        border: lightblue 1px solid;
+                    
+                }
+                h3{
+                        text-transform: uppercase;
+                    }
+            </style>
+        </head>
+        
+        <body>
+            <q-set q-set-id="1"></q-set>
+            <br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.14/webcomponents-hi.js"></script>
+        </body>
+        
+        </html>
