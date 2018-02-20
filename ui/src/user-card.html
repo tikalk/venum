@@ -2,6 +2,12 @@
     
     <head>
       <title>Questionairre</title>
+
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+
+    <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    
       <template id="q-set-card-template">
         <div class="q-set-title">
         </div>
@@ -12,6 +18,11 @@
         <div class="q-text">
         </div>
         <div class="q-options">
+        </div>
+        <div class="form-group">
+            <div class="radios" class="btn-group" data-toggle="buttons">
+                
+                </div>
         </div>
       </template>
         <script>
@@ -38,8 +49,17 @@
                     shadowRoot.querySelector('.q-set-title').innerHTML = "Questionnaire #"+qSetId;
                     const questions = qs.forEach(q => {
                         const mc = document.createElement("multiple-choice");
+                        const options = jQuery.map(q.answers[0], function(value, index) {
+                            return [value];
+                        });
+                        
+                        const answers = options.map(
+                            (ans, idx) => `<label class="btn btn-default">
+                        <input type="radio" name="options" id="option${idx}" value="${idx}"   /> ${ans}
+                    </label>`
+                        )
                         mc.setAttribute("text", q.question);
-                        mc.setAttribute("options", JSON.stringify(q.answers[0]));
+                        mc.setAttribute("options", answers);
                         shadowRoot.appendChild(mc);
                         });
                     
@@ -52,8 +72,8 @@
                         'content-type': 'application/json'
                         },
                         method: 'GET', // *GET, PUT, DELETE, etc.
-                        mode: 'cors', // no-cors, *same-origin
-                        referrer: 'no-referrer', // *client
+                        mode: 'same-origin', // no-cors, *same-origin
+                        referrer: '*', // *client
                         origin: '*'
                     })
                         .then((response) =>{
@@ -63,7 +83,7 @@
                             this.render(JSON.parse(responseText));
                         })
                         .catch((error) => {
-                            this.render(JSON.parse('[{\"name\":\"color\",\"question\":\"what is your favorite color?\",\"answers\":[{\"a\":\"blue\",\"e\":\"red\",\"c\":\"yellow\"}]},{\"name\":\"car\",\"question\":\"what is your favorite car?\",\"answers\":[{\"a\":\"picassa\",\"e\":\"porsh\",\"c\":\"buick\"}]}]'));
+                            // this.render(JSON.parse('[{\"name\":\"color\",\"question\":\"what is your favorite color?\",\"answers\":[{\"a\":\"blue\",\"e\":\"red\",\"c\":\"yellow\"}]},{\"name\":\"car\",\"question\":\"what is your favorite car?\",\"answers\":[{\"a\":\"picassa\",\"e\":\"porsh\",\"c\":\"buick\"}]}]'));
                             console.error(error);
                         });
                 }
@@ -96,7 +116,7 @@
                     const options = this.getAttribute('options');
 
                     this.querySelector('.q-text').innerHTML = text;
-                    this.querySelector('.q-options').innerHTML = options;
+                    this.querySelector('.radios').innerHTML = options;
                     
                 }
                 
